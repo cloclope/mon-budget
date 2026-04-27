@@ -1,0 +1,28 @@
+{
+  "name": "Patrimoine — Budget & Finance",
+  "short_name": "Patrimoine",
+  "description": "Gérez votre budget et patrimoine personnel",
+  "start_url": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f1923",
+  "theme_color": "#0f1923",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["finance", "productivity"],
+  "lang": "fr",
+  "dir": "ltr",
+  "prefer_related_applications": false
+}

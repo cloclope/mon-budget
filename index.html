@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f1923" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Patrimoine" />
+  <meta name="description" content="Gérez votre budget et patrimoine personnel" />
+  <title>Patrimoine — Budget & Finance</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ─── SPLASH ─────────────────────────────────────────────────────────────── -->
+<div id="splash">
+  <div class="splash-logo">
+    <span class="splash-icon">◈</span>
+    <span class="splash-name">Patrimoine</span>
+  </div>
+  <p class="splash-sub">Budget & Finance Personnelle</p>
+</div>
+
+<!-- ─── APP SHELL ──────────────────────────────────────────────────────────── -->
+<div id="app" class="hidden">
+
+  <!-- TOP BAR -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <span class="topbar-icon">◈</span>
+      <div>
+        <div class="topbar-title" id="page-title">Tableau de Bord</div>
+        <div class="topbar-date" id="topbar-date"></div>
+      </div>
+    </div>
+    <button class="topbar-btn" id="add-btn" aria-label="Ajouter">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </button>
+  </header>
+
+  <!-- PAGES -->
+  <main class="pages">
+
+    <!-- ── PAGE: DASHBOARD ──────────────────────────────────────────────────── -->
+    <section class="page active" id="page-dashboard">
+
+      <div class="hero-card">
+        <div class="hero-label">Patrimoine Net</div>
+        <div class="hero-amount" id="dash-patrimoine">—</div>
+        <div class="hero-sub">
+          <span class="hero-chip positive" id="dash-actif-chip">Actifs —</span>
+          <span class="hero-chip negative" id="dash-passif-chip">Passifs —</span>
+        </div>
+      </div>
+
+      <div class="kpi-row">
+        <div class="kpi-card teal">
+          <div class="kpi-label">Revenus</div>
+          <div class="kpi-value" id="dash-revenus">—</div>
+          <div class="kpi-icon">↑</div>
+        </div>
+        <div class="kpi-card red">
+          <div class="kpi-label">Dépenses</div>
+          <div class="kpi-value" id="dash-depenses">—</div>
+          <div class="kpi-icon">↓</div>
+        </div>
+        <div class="kpi-card blue">
+          <div class="kpi-label">Épargne</div>
+          <div class="kpi-value" id="dash-epargne">—</div>
+          <div class="kpi-icon">◎</div>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <span>Taux d'épargne</span>
+        <span id="dash-taux-pct" class="badge">—</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-bar" id="dash-taux-bar" style="width:0%"></div>
+        <div class="progress-target" style="left:20%"></div>
+      </div>
+      <div class="progress-labels">
+        <span>0%</span><span>Objectif 20%</span><span>100%</span>
+      </div>
+
+      <div class="section-header">
+        <span>Dépenses du mois</span>
+        <button class="link-btn" onclick="switchPage('budget')">Voir tout →</button>
+      </div>
+      <div id="dash-categories" class="cat-list"></div>
+
+      <div class="section-header">
+        <span>Dernières opérations</span>
+        <button class="link-btn" onclick="switchPage('transactions')">Voir tout →</button>
+      </div>
+      <div id="dash-recent" class="tx-list"></div>
+
+    </section>
+
+    <!-- ── PAGE: BUDGET ─────────────────────────────────────────────────────── -->
+    <section class="page" id="page-budget">
+
+      <div class="month-nav">
+        <button class="month-btn" id="month-prev">‹</button>
+        <div class="month-label" id="month-label"></div>
+        <button class="month-btn" id="month-next">›</button>
+      </div>
+
+      <div class="budget-summary-row">
+        <div class="bsum-card">
+          <div class="bsum-label">Budget</div>
+          <div class="bsum-val" id="bud-total-budget">0 €</div>
+        </div>
+        <div class="bsum-card">
+          <div class="bsum-label">Dépensé</div>
+          <div class="bsum-val warn" id="bud-total-reel">0 €</div>
+        </div>
+        <div class="bsum-card">
+          <div class="bsum-label">Restant</div>
+          <div class="bsum-val ok" id="bud-total-restant">0 €</div>
+        </div>
+      </div>
+
+      <div class="section-header"><span>Par catégorie</span></div>
+      <div id="budget-cats" class="budget-cat-list"></div>
+
+      <div class="section-header">
+        <span>Sources de revenus</span>
+        <button class="icon-btn" onclick="openRevenueModal()">＋</button>
+      </div>
+      <div id="revenues-list" class="rev-list"></div>
+
+    </section>
+
+    <!-- ── PAGE: TRANSACTIONS ───────────────────────────────────────────────── -->
+    <section class="page" id="page-transactions">
+
+      <div class="search-bar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="tx-search" placeholder="Rechercher..." />
+      </div>
+
+      <div class="filter-chips">
+        <button class="chip active" data-filter="all" onclick="filterTx(this,'all')">Tout</button>
+        <button class="chip" data-filter="depense" onclick="filterTx(this,'depense')">Dépenses</button>
+        <button class="chip" data-filter="revenu" onclick="filterTx(this,'revenu')">Revenus</button>
+      </div>
+
+      <div id="tx-list-main" class="tx-list tx-list-full"></div>
+
+    </section>
+
+    <!-- ── PAGE: PATRIMOINE ─────────────────────────────────────────────────── -->
+    <section class="page" id="page-patrimoine">
+
+      <div class="hero-card gold">
+        <div class="hero-label">Patrimoine Net</div>
+        <div class="hero-amount" id="pat-net">—</div>
+        <div class="hero-sub">
+          <span class="hero-chip positive" id="pat-actif-chip">Actifs —</span>
+          <span class="hero-chip negative" id="pat-passif-chip">Passifs —</span>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <span>Actifs</span>
+        <button class="icon-btn" onclick="openAssetModal('actif')">＋</button>
+      </div>
+      <div id="actifs-list" class="asset-list"></div>
+
+      <div class="section-header">
+        <span>Passifs</span>
+        <button class="icon-btn" onclick="openAssetModal('passif')">＋</button>
+      </div>
+      <div id="passifs-list" class="asset-list"></div>
+
+      <div class="section-header"><span>Répartition des actifs</span></div>
+      <div class="donut-container">
+        <canvas id="donut-chart" width="220" height="220"></canvas>
+        <div id="donut-legend" class="donut-legend"></div>
+      </div>
+
+    </section>
+
+    <!-- ── PAGE: ÉPARGNE ────────────────────────────────────────────────────── -->
+    <section class="page" id="page-epargne">
+
+      <div class="hero-card blue-dark">
+        <div class="hero-label">Total épargne</div>
+        <div class="hero-amount" id="ep-total">—</div>
+        <div class="hero-sub">
+          <span class="hero-chip neutral" id="ep-pv-chip">Plus-value —</span>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <span>Placements</span>
+        <button class="icon-btn" onclick="openPlacementModal()">＋</button>
+      </div>
+      <div id="placements-list" class="placement-list"></div>
+
+      <div class="section-header"><span>Simulateur — Intérêts composés</span></div>
+      <div class="sim-card">
+        <div class="sim-row">
+          <label>Capital initial</label>
+          <div class="sim-input-wrap"><input type="number" id="sim-capital" value="10000" /><span>€</span></div>
+        </div>
+        <div class="sim-row">
+          <label>Versement mensuel</label>
+          <div class="sim-input-wrap"><input type="number" id="sim-versement" value="200" /><span>€</span></div>
+        </div>
+        <div class="sim-row">
+          <label>Taux annuel</label>
+          <div class="sim-input-wrap"><input type="number" id="sim-taux" value="7" step="0.1" /><span>%</span></div>
+        </div>
+        <div class="sim-row">
+          <label>Durée</label>
+          <div class="sim-input-wrap"><input type="number" id="sim-duree" value="20" /><span>ans</span></div>
+        </div>
+        <button class="sim-btn" onclick="runSimulation()">Calculer</button>
+        <div id="sim-result" class="sim-result hidden">
+          <div class="sim-result-row"><span>Capital final</span><strong id="sim-final">—</strong></div>
+          <div class="sim-result-row"><span>Plus-value</span><strong id="sim-pv" class="ok">—</strong></div>
+          <div class="sim-result-row"><span>Rendement</span><strong id="sim-rdt" class="ok">—</strong></div>
+        </div>
+      </div>
+
+      <div class="section-header"><span>Objectifs d'épargne</span></div>
+      <div id="objectifs-list" class="obj-list"></div>
+      <button class="fab-inline" onclick="openObjectifModal()">＋ Ajouter un objectif</button>
+
+    </section>
+
+  </main>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" onclick="switchPage('dashboard')" data-page="dashboard">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      <span>Accueil</span>
+    </button>
+    <button class="nav-item" onclick="switchPage('budget')" data-page="budget">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M12 6v6l4 2"/></svg>
+      <span>Budget</span>
+    </button>
+    <button class="nav-item" onclick="switchPage('transactions')" data-page="transactions">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+      <span>Opérations</span>
+    </button>
+    <button class="nav-item" onclick="switchPage('patrimoine')" data-page="patrimoine">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>Patrimoine</span>
+    </button>
+    <button class="nav-item" onclick="switchPage('epargne')" data-page="epargne">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      <span>Épargne</span>
+    </button>
+  </nav>
+</div>
+
+<!-- ─── MODALS ─────────────────────────────────────────────────────────────── -->
+
+<!-- Add Transaction Modal -->
+<div class="modal-overlay hidden" id="modal-transaction">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Nouvelle opération</h2>
+      <button class="modal-close" onclick="closeModal('modal-transaction')">✕</button>
+    </div>
+    <div class="type-toggle">
+      <button class="type-btn active" id="type-depense" onclick="setTxType('depense')">Dépense</button>
+      <button class="type-btn" id="type-revenu" onclick="setTxType('revenu')">Revenu</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>Montant</label>
+        <div class="amount-input">
+          <input type="number" id="tx-amount" placeholder="0" step="0.01" inputmode="decimal" />
+          <span>€</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>Description</label>
+        <input type="text" id="tx-desc" placeholder="Ex: Courses Leclerc" />
+      </div>
+      <div class="field">
+        <label>Catégorie</label>
+        <select id="tx-cat"></select>
+      </div>
+      <div class="field">
+        <label>Date</label>
+        <input type="date" id="tx-date" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal('modal-transaction')">Annuler</button>
+      <button class="btn-primary" onclick="saveTransaction()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Asset Modal -->
+<div class="modal-overlay hidden" id="modal-asset">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="asset-modal-title">Nouvel actif</h2>
+      <button class="modal-close" onclick="closeModal('modal-asset')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>Nom</label>
+        <input type="text" id="asset-name" placeholder="Ex: Résidence principale" />
+      </div>
+      <div class="field">
+        <label>Valeur actuelle (€)</label>
+        <input type="number" id="asset-value" placeholder="0" />
+      </div>
+      <div class="field">
+        <label>Catégorie</label>
+        <select id="asset-cat">
+          <option value="🏠 Immobilier">🏠 Immobilier</option>
+          <option value="📈 Placements">📈 Placements</option>
+          <option value="🏦 Liquidités">🏦 Liquidités</option>
+          <option value="🚗 Véhicules">🚗 Véhicules</option>
+          <option value="📦 Autres">📦 Autres</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal('modal-asset')">Annuler</button>
+      <button class="btn-primary" onclick="saveAsset()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Placement Modal -->
+<div class="modal-overlay hidden" id="modal-placement">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Nouveau placement</h2>
+      <button class="modal-close" onclick="closeModal('modal-placement')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>Nom</label>
+        <input type="text" id="pl-name" placeholder="Ex: Livret A" />
+      </div>
+      <div class="field">
+        <label>Capital investi (€)</label>
+        <input type="number" id="pl-capital" placeholder="0" />
+      </div>
+      <div class="field">
+        <label>Valeur actuelle (€)</label>
+        <input type="number" id="pl-value" placeholder="0" />
+      </div>
+      <div class="field">
+        <label>Taux annuel (%)</label>
+        <input type="number" id="pl-taux" placeholder="0" step="0.01" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal('modal-placement')">Annuler</button>
+      <button class="btn-primary" onclick="savePlacement()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Objectif Modal -->
+<div class="modal-overlay hidden" id="modal-objectif">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Nouvel objectif</h2>
+      <button class="modal-close" onclick="closeModal('modal-objectif')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>Nom de l'objectif</label>
+        <input type="text" id="obj-name" placeholder="Ex: 🏖️ Vacances" />
+      </div>
+      <div class="field">
+        <label>Montant cible (€)</label>
+        <input type="number" id="obj-cible" placeholder="0" />
+      </div>
+      <div class="field">
+        <label>Montant atteint (€)</label>
+        <input type="number" id="obj-atteint" placeholder="0" />
+      </div>
+      <div class="field">
+        <label>Délai</label>
+        <input type="text" id="obj-delai" placeholder="Ex: Juin 2026" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal('modal-objectif')">Annuler</button>
+      <button class="btn-primary" onclick="saveObjectif()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Revenue Modal -->
+<div class="modal-overlay hidden" id="modal-revenue">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Source de revenu</h2>
+      <button class="modal-close" onclick="closeModal('modal-revenue')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>Source</label>
+        <input type="text" id="rev-name" placeholder="Ex: 💼 Salaire" />
+      </div>
+      <div class="field">
+        <label>Montant net mensuel (€)</label>
+        <input type="number" id="rev-amount" placeholder="0" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal('modal-revenue')">Annuler</button>
+      <button class="btn-primary" onclick="saveRevenue()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Budget Config Modal -->
+<div class="modal-overlay hidden" id="modal-budget-config">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Budget — <span id="bcat-title"></span></h2>
+      <button class="modal-close" onclick="closeModal('modal-budget-config')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>Budget mensuel planifié (€)</label>
+        <input type="number" id="bcat-budget" placeholder="0" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal('modal-budget-config')">Annuler</button>
+      <button class="btn-primary" onclick="saveBudgetCat()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast hidden"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
