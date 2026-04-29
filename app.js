@@ -165,6 +165,15 @@ async function doSignup() {
   btn.textContent = 'Créer mon compte'; btn.disabled = false;
 
   if (error) { showAuthError('signup', 'Erreur : ' + error.message); return; }
+
+  // Supabase peut demander une confirmation par e-mail
+  if (!data.session) {
+    showAuthError('signup', '📧 Un e-mail de confirmation a été envoyé. Cliquez sur le lien puis connectez-vous.');
+    switchAuthTab('login');
+    document.getElementById('login-email').value = email;
+    return;
+  }
+
   await onLoginSuccess(data.user);
   toast('🎉 Compte créé ! Bienvenue !');
 }
@@ -184,6 +193,8 @@ async function onLoginSuccess(user) {
   currentUser = user;
   document.getElementById('auth-screen').classList.add('hidden');
   document.getElementById('app').classList.remove('hidden');
+  // Reset to dashboard tab
+  switchPage('dashboard');
   setSyncStatus('syncing');
   await loadFromCloud();
   setSyncStatus('synced');
